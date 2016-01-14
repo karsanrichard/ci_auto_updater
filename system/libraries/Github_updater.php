@@ -39,10 +39,9 @@ class Github_updater
      *
      * @return bool true if there is an update and false otherwise
      */
-    public function has_update()
-    {
-        $branches = json_decode($this->_connect(self::API_URL.$this->ci->config->item('github_user').'/'.$this->ci->config->item('github_repo').'/branches'));
-        return $branches[0]->commit->sha !== $this->ci->config->item('current_commit');
+    public function has_update() {
+        $branches = json_decode($this -> _connect(self::API_URL . $this -> ci -> config -> item('github_user') . '/' . $this -> ci -> config -> item('github_repo') . '/branches'));
+        return @$branches[0] -> commit -> sha !== $this -> ci -> config -> item('current_commit');
     }
 
     /**
@@ -51,17 +50,15 @@ class Github_updater
      *
      * @return array of the messages or false if no update
      */
-    public function get_update_comments()
-    {
-        $branches = json_decode($this->_connect(self::API_URL.$this->ci->config->item('github_user').'/'.$this->ci->config->item('github_repo').'/branches'));
-        $hash = $branches[0]->commit->sha;
-        if($hash !== $this->ci->config->item('current_commit'))
-        {
+    public function get_update_comments() {
+        $branches = json_decode($this -> _connect(self::API_URL . $this -> ci -> config -> item('github_user') . '/' . $this -> ci -> config -> item('github_repo') . '/branches'));
+        $hash = $branches[0] -> commit -> sha;
+        if ($hash !== $this -> ci -> config -> item('current_commit')) {
             $messages = array();
-            $response = json_decode($this->_connect(self::API_URL.$this->ci->config->item('github_user').'/'.$this->ci->config->item('github_repo').'/compare/'.$this->ci->config->item('current_commit').'...'.$hash));
-            $commits = $response->commits;
-            foreach($commits as $commit)
-                $messages[] = $commit->commit->message;
+            $response = json_decode($this -> _connect(self::API_URL . $this -> ci -> config -> item('github_user') . '/' . $this -> ci -> config -> item('github_repo') . '/compare/' . $this -> ci -> config -> item('current_commit') . '...' . $hash));
+            $commits = $response -> commits;
+            foreach ($commits as $commit)
+                $messages[] = $commit -> commit -> message;
             return $messages;
         }
         return false;
@@ -72,36 +69,32 @@ class Github_updater
      *
      * @return bool true on success, false on failure
      */
-    public function update()
-    {
-        $branches = json_decode($this->_connect(self::API_URL.$this->ci->config->item('github_user').'/'.$this->ci->config->item('github_repo').'/branches'));
-        $hash = $branches[0]->commit->sha;
-        if($hash !== $this->ci->config->item('current_commit'))
-        {
-            $commits = json_decode($this->_connect(self::API_URL.$this->ci->config->item('github_user').'/'.$this->ci->config->item('github_repo').'/compare/'.$this->ci->config->item('current_commit').'...'.$hash));
-            $files = $commits->files;
-            if($dir = $this->_get_and_extract($hash))
-            {
+    public function update() {
+        $branches = json_decode($this -> _connect(self::API_URL . $this -> ci -> config -> item('github_user') . '/' . $this -> ci -> config -> item('github_repo') . '/branches'));
+        $hash = $branches[0] -> commit -> sha;
+        if ($hash !== $this -> ci -> config -> item('current_commit')) {
+            $commits = json_decode($this -> _connect(self::API_URL . $this -> ci -> config -> item('github_user') . '/' . $this -> ci -> config -> item('github_repo') . '/compare/' . $this -> ci -> config -> item('current_commit') . '...' . $hash));
+            $files = $commits -> files;
+            if ($dir = $this -> _get_and_extract($hash)) {
                 //Loop through the list of changed files for this commit
-                foreach($files as $file)
-                {
+                foreach ($files as $file) {
                     //If the file isn't in the ignored list then perform the update
-                    if(!$this->_is_ignored($file->filename))
-                    {
+                    if (!$this -> _is_ignored($file -> filename)) {
                         //If the status is removed then delete the file
-                        if($file->status === 'removed')unlink($file->filename);
+                        if ($file -> status === 'removed')
+                            unlink($file -> filename);
                         //Otherwise copy the file from the update.
-                        else copy($dir.'/'.$file->filename, $file->filename);
+                        else
+                            copy($dir . '/' . $file -> filename, $file -> filename);
                     }
                 }
                 //Clean up
-                if($this->ci->config->item('clean_update_files'))
-                {
+                if ($this -> ci -> config -> item('clean_update_files')) {
                     shell_exec("rm -rf {$dir}");
                     unlink("{$hash}.zip");
                 }
                 //Update the current commit hash
-                $this->_set_config_hash($hash);
+                $this -> _set_config_hash($hash);
 
                 return true;
             }

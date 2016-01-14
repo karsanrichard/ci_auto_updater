@@ -28,6 +28,13 @@ class Welcome extends CI_Controller {
 
 		echo "<pre>"; print_r($res);
 	}
+
+	public function github_update(){
+		echo "I WAS HERE";
+		$res = $this->github_updater->update();
+
+		echo "<pre>"; print_r($res);
+	}
 }
 
 /* End of file welcome.php */

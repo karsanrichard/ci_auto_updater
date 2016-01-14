@@ -8,7 +8,7 @@ $config['github_user'] = 'karsanrichard';
 /**
  * The repo on GitHub we will be updating from
  */
-$config['github_repo'] = 'ci_autoupdater';
+$config['github_repo'] = 'ci_auto_updater';
 
 /**
  * The branch to update from
@@ -21,7 +21,7 @@ $config['github_branch'] = 'master';
  * NOTE: You should only need to set this initially it will be
  * automatically set by the library after subsequent updates.
  */
-$config['current_commit'] = '';
+$config['current_commit'] = 'ddcb2cb983d1fe38e72f987daf8af821c5f4f078';
 
 /**
  * A list of files or folders to never perform an update on.
